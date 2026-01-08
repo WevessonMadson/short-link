@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { Copy, Check, Trash2, ExternalLink, BarChart3 } from 'lucide-react';
+import { Copy, Check, Trash2, ExternalLink, BarChart3, Pencil, X, Save } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import type { LinkData } from '@/lib/api';
 import { formatDistanceToNow } from 'date-fns';
@@ -9,10 +10,13 @@ import { ptBR } from 'date-fns/locale';
 interface LinkListProps {
   links: LinkData[];
   onDelete: (id: string) => void;
+  onUpdate: (id: string, newOriginalUrl: string) => void;
 }
 
-export function LinkList({ links, onDelete }: LinkListProps) {
+export function LinkList({ links, onDelete, onUpdate }: LinkListProps) {
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editUrl, setEditUrl] = useState('');
 
   if (links.length === 0) {
     return null;
@@ -26,6 +30,24 @@ export function LinkList({ links, onDelete }: LinkListProps) {
     await navigator.clipboard.writeText(getShortUrl(link.shortCode));
     setCopiedId(link.id);
     setTimeout(() => setCopiedId(null), 2000);
+  };
+
+  const startEdit = (link: LinkData) => {
+    setEditingId(link.id);
+    setEditUrl(link.originalUrl);
+  };
+
+  const cancelEdit = () => {
+    setEditingId(null);
+    setEditUrl('');
+  };
+
+  const saveEdit = (id: string) => {
+    if (editUrl.trim()) {
+      onUpdate(id, editUrl.trim());
+      setEditingId(null);
+      setEditUrl('');
+    }
   };
 
   return (
@@ -66,14 +88,48 @@ export function LinkList({ links, onDelete }: LinkListProps) {
                     )}
                   </Button>
                 </div>
-                <a
-                  href={link.originalUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-sm text-muted-foreground hover:text-foreground truncate block"
-                >
-                  {link.originalUrl}
-                </a>
+                
+                {editingId === link.id ? (
+                  <div className="flex items-center gap-2 mt-2">
+                    <Input
+                      value={editUrl}
+                      onChange={(e) => setEditUrl(e.target.value)}
+                      className="h-8 text-sm"
+                      placeholder="Nova URL de destino"
+                      autoFocus
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') saveEdit(link.id);
+                        if (e.key === 'Escape') cancelEdit();
+                      }}
+                    />
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8 text-accent hover:text-accent"
+                      onClick={() => saveEdit(link.id)}
+                    >
+                      <Save className="w-4 h-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8 text-muted-foreground hover:text-foreground"
+                      onClick={cancelEdit}
+                    >
+                      <X className="w-4 h-4" />
+                    </Button>
+                  </div>
+                ) : (
+                  <a
+                    href={link.originalUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm text-muted-foreground hover:text-foreground truncate block"
+                  >
+                    {link.originalUrl}
+                  </a>
+                )}
+                
                 <div className="flex items-center gap-4 mt-2 text-xs text-muted-foreground">
                   <span>
                     {formatDistanceToNow(new Date(link.createdAt), {
@@ -88,6 +144,16 @@ export function LinkList({ links, onDelete }: LinkListProps) {
                 </div>
               </div>
               <div className="flex items-center gap-1">
+                {editingId !== link.id && (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 text-muted-foreground hover:text-foreground"
+                    onClick={() => startEdit(link)}
+                  >
+                    <Pencil className="w-4 h-4" />
+                  </Button>
+                )}
                 <Button
                   variant="ghost"
                   size="icon"

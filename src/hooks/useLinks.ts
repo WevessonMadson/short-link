@@ -55,6 +55,14 @@ export function useLinks() {
     setLinks(prev => prev.filter(link => link.id !== id));
   }, []);
 
+  const updateLink = useCallback((id: string, newOriginalUrl: string) => {
+    setLinks(prev => prev.map(link => 
+      link.id === id 
+        ? { ...link, originalUrl: newOriginalUrl }
+        : link
+    ));
+  }, []);
+
   const getLinkByCode = useCallback((shortCode: string): LinkData | undefined => {
     return links.find(link => link.shortCode === shortCode);
   }, [links]);
@@ -72,6 +80,7 @@ export function useLinks() {
     isLoading,
     createLink,
     deleteLink,
+    updateLink,
     getLinkByCode,
     incrementClicks,
   };
