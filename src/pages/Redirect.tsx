@@ -21,7 +21,7 @@ export default function Redirect() {
     } else {
       setError(true);
     }
-  }, [shortCode, getLinkByCode, incrementClicks, isLoading]);
+  }, [shortCode, isLoading]);
 
   if (error) {
     return (

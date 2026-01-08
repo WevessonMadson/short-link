@@ -1,87 +1,99 @@
+// src/hooks/useLinks.ts
 import { useState, useEffect, useCallback } from 'react';
 import type { LinkData, CreateLinkPayload } from '@/lib/api';
-import { generateShortCode } from '@/lib/api';
+import {
+  getLinks as apiGetLinks,
+  createLink as apiCreateLink,
+  updateLink as apiUpdateLink,
+  deleteLink as apiDeleteLink,
+  createUserBin,
+  generateShortCode,
+} from '@/lib/api';
+import { useUserId } from './useUserId';
 
-const STORAGE_KEY = 'shortlinks_data';
-
-// Local storage based hook for demo/development
-// Replace with actual API calls when deploying with serverless functions
 export function useLinks() {
+  const { userData, saveUserData } = useUserId();
   const [links, setLinks] = useState<LinkData[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
 
-  // Load links from localStorage on mount
+  // Carrega os links somente se o usuário já existir
   useEffect(() => {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) {
+    if (!userData) return;
+    (async () => {
+      setIsLoading(true);
       try {
-        setLinks(JSON.parse(stored));
-      } catch (e) {
-        console.error('Failed to parse stored links:', e);
+        const data = await apiGetLinks(userData.binId, userData.userId);
+        setLinks(data);
+      } catch (err) {
+        console.error('Failed to load links:', err);
+      } finally {
+        setIsLoading(false);
       }
-    }
-    setIsLoading(false);
-  }, []);
+    })();
+  }, [userData]);
 
-  // Save links to localStorage whenever they change
-  useEffect(() => {
-    if (!isLoading) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(links));
-    }
-  }, [links, isLoading]);
+  // 🔹 Cria um link (e cria o bin se for o primeiro)
+  const createLink = useCallback(
+    async (payload: Omit<CreateLinkPayload, 'ownerId' | 'binId'>): Promise<LinkData> => {
+      let currentUser = userData;
 
-  const createLink = useCallback(async (payload: CreateLinkPayload): Promise<LinkData> => {
-    const shortCode = payload.shortCode || generateShortCode();
-    
-    // Check if short code already exists
-    const exists = links.some(link => link.shortCode === shortCode);
-    if (exists) {
-      throw new Error('Short code already exists');
-    }
+      // Se ainda não existe usuário/bin, cria agora
+      if (!currentUser) {
+        const userId = crypto.randomUUID();
+        const { binId } = await createUserBin();
+        currentUser = { userId, binId };
+        saveUserData(currentUser);
+      }
 
-    const newLink: LinkData = {
-      id: crypto.randomUUID(),
-      originalUrl: payload.originalUrl,
-      shortCode,
-      createdAt: new Date().toISOString(),
-      clicks: 0,
-    };
+      const newLink = await apiCreateLink({
+        ...payload,
+        ownerId: currentUser.userId,
+        binId: currentUser.binId,
+      });
 
-    setLinks(prev => [newLink, ...prev]);
-    return newLink;
-  }, [links]);
+      setLinks(prev => [newLink, ...prev]);
+      return newLink;
+    },
+    [userData, saveUserData]
+  );
 
-  const deleteLink = useCallback((id: string) => {
-    setLinks(prev => prev.filter(link => link.id !== id));
-  }, []);
+  const updateLink = useCallback(
+    async (id: string, newOriginalUrl: string) => {
+      if (!userData) return;
+      await apiUpdateLink(id, newOriginalUrl, userData.binId, userData.userId);
+      setLinks(prev =>
+        prev.map(link =>
+          link.id === id ? { ...link, originalUrl: newOriginalUrl } : link
+        )
+      );
+    },
+    [userData]
+  );
 
-  const updateLink = useCallback((id: string, newOriginalUrl: string) => {
-    setLinks(prev => prev.map(link => 
-      link.id === id 
-        ? { ...link, originalUrl: newOriginalUrl }
-        : link
-    ));
-  }, []);
+  const deleteLink = useCallback(
+    async (id: string) => {
+      if (!userData) return;
+      await apiDeleteLink(id, userData.binId, userData.userId);
+      setLinks(prev => prev.filter(link => link.id !== id));
+    },
+    [userData]
+  );
 
-  const getLinkByCode = useCallback((shortCode: string): LinkData | undefined => {
-    return links.find(link => link.shortCode === shortCode);
-  }, [links]);
+  const getLinkByCode = useCallback(
+    (shortCode: string): LinkData | undefined =>
+      links.find(link => link.shortCode === shortCode),
+    [links]
+  );
 
   const incrementClicks = useCallback((shortCode: string) => {
-    setLinks(prev => prev.map(link => 
-      link.shortCode === shortCode 
-        ? { ...link, clicks: link.clicks + 1 }
-        : link
-    ));
+    setLinks(prev =>
+      prev.map(link =>
+        link.shortCode === shortCode
+          ? { ...link, clicks: link.clicks + 1 }
+          : link
+      )
+    );
   }, []);
 
-  return {
-    links,
-    isLoading,
-    createLink,
-    deleteLink,
-    updateLink,
-    getLinkByCode,
-    incrementClicks,
-  };
+  return { links, isLoading, createLink, deleteLink, updateLink, getLinkByCode, incrementClicks };
 }

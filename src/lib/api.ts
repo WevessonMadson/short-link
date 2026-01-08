@@ -1,8 +1,9 @@
-// API configuration - update these when deploying
+// src/lib/api.ts
 const API_BASE_URL = import.meta.env.VITE_API_URL || '/api';
 
 export interface LinkData {
   id: string;
+  ownerId: string;
   originalUrl: string;
   shortCode: string;
   createdAt: string;
@@ -12,9 +13,24 @@ export interface LinkData {
 export interface CreateLinkPayload {
   originalUrl: string;
   shortCode?: string;
+  ownerId: string;
+  binId: string;
 }
 
-// Generate a random short code
+// 🔹 Cria um bin para um novo usuário
+export async function createUserBin(): Promise<{ binId: string }> {
+  const response = await fetch(`${API_BASE_URL}/create-bin`, {
+    method: 'POST',
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to create user bin');
+  }
+
+  return response.json();
+}
+
+// Gera short code aleatório
 export function generateShortCode(length: number = 6): string {
   const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
   let result = '';
@@ -24,66 +40,54 @@ export function generateShortCode(length: number = 6): string {
   return result;
 }
 
-// Create a new shortened link
-export async function createLink(payload: CreateLinkPayload): Promise<LinkData> {
-  const shortCode = payload.shortCode || generateShortCode();
-  
-  const linkData: LinkData = {
-    id: crypto.randomUUID(),
-    originalUrl: payload.originalUrl,
-    shortCode,
-    createdAt: new Date().toISOString(),
-    clicks: 0,
-  };
+export async function getLinks(binId: string, userId: string): Promise<LinkData[]> {
+  const response = await fetch(`${API_BASE_URL}/links`, {
+    headers: {
+      'x-bin-id': binId,
+      'x-user-id': userId,
+    },
+  });
+  if (!response.ok) throw new Error('Failed to fetch links');
+  const data = await response.json();
+  return data.links;
+}
 
+export async function createLink(payload: CreateLinkPayload): Promise<LinkData> {
   const response = await fetch(`${API_BASE_URL}/links`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
+      'x-bin-id': payload.binId,
+      'x-user-id': payload.ownerId,
     },
-    body: JSON.stringify(linkData),
+    body: JSON.stringify(payload),
   });
 
-  if (!response.ok) {
-    throw new Error('Failed to create link');
-  }
-
-  return linkData;
+  if (!response.ok) throw new Error('Failed to create link');
+  const data = await response.json();
+  return data.link;
 }
 
-// Get all links
-export async function getLinks(): Promise<LinkData[]> {
-  const response = await fetch(`${API_BASE_URL}/links`);
-  
-  if (!response.ok) {
-    throw new Error('Failed to fetch links');
-  }
-
-  return response.json();
+export async function updateLink(id: string, newUrl: string, binId: string, userId: string): Promise<void> {
+  const response = await fetch(`${API_BASE_URL}/links/${id}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-bin-id': binId,
+      'x-user-id': userId,
+    },
+    body: JSON.stringify({ originalUrl: newUrl }),
+  });
+  if (!response.ok) throw new Error('Failed to update link');
 }
 
-// Get a single link by short code
-export async function getLinkByCode(shortCode: string): Promise<LinkData | null> {
-  const response = await fetch(`${API_BASE_URL}/links/${shortCode}`);
-  
-  if (response.status === 404) {
-    return null;
-  }
-
-  if (!response.ok) {
-    throw new Error('Failed to fetch link');
-  }
-
-  return response.json();
-}
-
-// Delete a link
-export async function deleteLink(id: string): Promise<void> {
+export async function deleteLink(id: string, binId: string, userId: string): Promise<void> {
   const response = await fetch(`${API_BASE_URL}/links/${id}`, {
     method: 'DELETE',
+    headers: {
+      'x-bin-id': binId,
+      'x-user-id': userId,
+    },
   });
-
-  if (!response.ok) {
-    throw new Error('Failed to delete link');
-  }
+  if (!response.ok) throw new Error('Failed to delete link');
 }
