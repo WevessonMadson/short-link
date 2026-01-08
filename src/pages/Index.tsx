@@ -4,7 +4,7 @@ import { LinkList } from '@/components/LinkList';
 import { useLinks } from '@/hooks/useLinks';
 
 const Index = () => {
-  const { links, createLink, deleteLink, isLoading } = useLinks();
+  const { links, createLink, deleteLink, updateLink, isLoading } = useLinks();
 
   return (
     <div className="min-h-screen bg-background">
@@ -39,7 +39,7 @@ const Index = () => {
           <div className="space-y-8">
             <LinkForm onSubmit={createLink} />
             
-            {!isLoading && <LinkList links={links} onDelete={deleteLink} />}
+            {!isLoading && <LinkList links={links} onDelete={deleteLink} onUpdate={updateLink} />}
           </div>
         </div>
       </main>
