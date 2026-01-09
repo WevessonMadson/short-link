@@ -106,7 +106,7 @@ const Login = () => {
               </div>
             </div>
 
-            <Button
+            {/* <Button
               type="button"
               variant="outline"
               className="w-full"
@@ -131,7 +131,7 @@ const Login = () => {
                 />
               </svg>
               Entrar com Google
-            </Button>
+            </Button> */}
 
             <p className="text-center text-sm text-muted-foreground mt-6">
               Não tem uma conta?{' '}
