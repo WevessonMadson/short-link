@@ -1,21 +1,30 @@
-import { Link2 } from 'lucide-react';
+import { Link2, LogOut } from 'lucide-react';
 import { LinkForm } from '@/components/LinkForm';
 import { LinkList } from '@/components/LinkList';
 import { useLinks } from '@/hooks/useLinks';
+import { useAuth } from '@/hooks/useAuth';
+import { Button } from '@/components/ui/button';
 
 const Index = () => {
   const { links, createLink, deleteLink, updateLink, isLoading } = useLinks();
+  const { logout } = useAuth();
 
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="border-b border-border/50">
         <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center gap-2">
-            <div className="w-10 h-10 rounded-lg gradient-primary flex items-center justify-center shadow-glow">
-              <Link2 className="w-5 h-5 text-primary-foreground" />
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div className="w-10 h-10 rounded-lg gradient-primary flex items-center justify-center shadow-glow">
+                <Link2 className="w-5 h-5 text-primary-foreground" />
+              </div>
+              <span className="text-xl font-bold">ShortLink</span>
             </div>
-            <span className="text-xl font-bold">ShortLink</span>
+            <Button variant="ghost" size="sm" onClick={logout}>
+              <LogOut className="w-4 h-4 mr-2" />
+              Sair
+            </Button>
           </div>
         </div>
       </header>
