@@ -2,26 +2,37 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Link2, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { useLinks } from '@/hooks/useLinks';
+import { getLinkByShortCode } from '@/lib/api';
 
 export default function Redirect() {
   const { shortCode } = useParams<{ shortCode: string }>();
   const navigate = useNavigate();
-  const { getLinkByCode, incrementClicks, isLoading } = useLinks();
   const [error, setError] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if (isLoading || !shortCode) return;
-
-    const link = getLinkByCode(shortCode);
-    
-    if (link) {
-      incrementClicks(shortCode);
-      window.location.href = link.originalUrl;
-    } else {
-      setError(true);
+    if (!shortCode) {
+      navigate('/');
+      return;
     }
-  }, [shortCode, isLoading]);
+
+    const redirect = async () => {
+      try {
+        const link = await getLinkByShortCode(shortCode);
+        if (link?.originalUrl) {
+          window.location.href = link.originalUrl;
+        } else {
+          setError(true);
+        }
+      } catch (err) {
+        setError(true);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    redirect();
+  }, [shortCode, navigate]);
 
   if (error) {
     return (

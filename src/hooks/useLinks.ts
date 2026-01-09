@@ -1,99 +1,95 @@
-// src/hooks/useLinks.ts
-import { useState, useEffect, useCallback } from 'react';
-import type { LinkData, CreateLinkPayload } from '@/lib/api';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
-  getLinks as apiGetLinks,
+  getLinks,
   createLink as apiCreateLink,
   updateLink as apiUpdateLink,
   deleteLink as apiDeleteLink,
-  createUserBin,
-  generateShortCode,
+  CreateLinkPayload,
+  LinkData,
 } from '@/lib/api';
-import { useUserId } from './useUserId';
+import { useToast } from '@/hooks/use-toast';
 
 export function useLinks() {
-  const { userData, saveUserData } = useUserId();
-  const [links, setLinks] = useState<LinkData[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
 
-  // Carrega os links somente se o usuário já existir
-  useEffect(() => {
-    if (!userData) return;
-    (async () => {
-      setIsLoading(true);
-      try {
-        const data = await apiGetLinks(userData.binId, userData.userId);
-        setLinks(data);
-      } catch (err) {
-        console.error('Failed to load links:', err);
-      } finally {
-        setIsLoading(false);
-      }
-    })();
-  }, [userData]);
+  const { data: links = [], isLoading } = useQuery({
+    queryKey: ['links'],
+    queryFn: getLinks,
+  });
 
-  // 🔹 Cria um link (e cria o bin se for o primeiro)
-  const createLink = useCallback(
-    async (payload: Omit<CreateLinkPayload, 'ownerId' | 'binId'>): Promise<LinkData> => {
-      let currentUser = userData;
-
-      // Se ainda não existe usuário/bin, cria agora
-      if (!currentUser) {
-        const userId = crypto.randomUUID();
-        const { binId } = await createUserBin();
-        currentUser = { userId, binId };
-        saveUserData(currentUser);
-      }
-
-      const newLink = await apiCreateLink({
-        ...payload,
-        ownerId: currentUser.userId,
-        binId: currentUser.binId,
+  const createMutation = useMutation({
+    mutationFn: apiCreateLink,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['links'] });
+    },
+    onError: (error: any) => {
+      const message = error.response?.data?.message || 'Erro ao criar link';
+      toast({
+        title: 'Erro',
+        description: message,
+        variant: 'destructive',
       });
-
-      setLinks(prev => [newLink, ...prev]);
-      return newLink;
     },
-    [userData, saveUserData]
-  );
+  });
 
-  const updateLink = useCallback(
-    async (id: string, newOriginalUrl: string) => {
-      if (!userData) return;
-      await apiUpdateLink(id, newOriginalUrl, userData.binId, userData.userId);
-      setLinks(prev =>
-        prev.map(link =>
-          link.id === id ? { ...link, originalUrl: newOriginalUrl } : link
-        )
-      );
+  const updateMutation = useMutation({
+    mutationFn: ({ id, originalUrl }: { id: string; originalUrl: string }) =>
+      apiUpdateLink(id, originalUrl),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['links'] });
+      toast({
+        title: 'Link atualizado!',
+        description: 'O destino do link foi alterado com sucesso.',
+      });
     },
-    [userData]
-  );
-
-  const deleteLink = useCallback(
-    async (id: string) => {
-      if (!userData) return;
-      await apiDeleteLink(id, userData.binId, userData.userId);
-      setLinks(prev => prev.filter(link => link.id !== id));
+    onError: (error: any) => {
+      const message = error.response?.data?.message || 'Erro ao atualizar link';
+      toast({
+        title: 'Erro',
+        description: message,
+        variant: 'destructive',
+      });
     },
-    [userData]
-  );
+  });
 
-  const getLinkByCode = useCallback(
-    (shortCode: string): LinkData | undefined =>
-      links.find(link => link.shortCode === shortCode),
-    [links]
-  );
+  const deleteMutation = useMutation({
+    mutationFn: apiDeleteLink,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['links'] });
+      toast({
+        title: 'Link excluído!',
+        description: 'O link foi removido com sucesso.',
+      });
+    },
+    onError: (error: any) => {
+      const message = error.response?.data?.message || 'Erro ao excluir link';
+      toast({
+        title: 'Erro',
+        description: message,
+        variant: 'destructive',
+      });
+    },
+  });
 
-  const incrementClicks = useCallback((shortCode: string) => {
-    setLinks(prev =>
-      prev.map(link =>
-        link.shortCode === shortCode
-          ? { ...link, clicks: link.clicks + 1 }
-          : link
-      )
-    );
-  }, []);
+  const createLink = async (payload: CreateLinkPayload): Promise<LinkData> => {
+    return createMutation.mutateAsync(payload);
+  };
 
-  return { links, isLoading, createLink, deleteLink, updateLink, getLinkByCode, incrementClicks };
+  const updateLink = async (id: string, originalUrl: string) => {
+    return updateMutation.mutateAsync({ id, originalUrl });
+  };
+
+  const deleteLink = async (id: string) => {
+    return deleteMutation.mutateAsync(id);
+  };
+
+  return {
+    links,
+    isLoading,
+    createLink,
+    updateLink,
+    deleteLink,
+    isCreating: createMutation.isPending,
+  };
 }

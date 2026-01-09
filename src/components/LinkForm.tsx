@@ -12,7 +12,6 @@ interface LinkFormProps {
 
 export function LinkForm({ onSubmit }: LinkFormProps) {
   const [url, setUrl] = useState('');
-  const [customCode, setCustomCode] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [createdLink, setCreatedLink] = useState<LinkData | null>(null);
   const [copied, setCopied] = useState(false);
@@ -39,21 +38,15 @@ export function LinkForm({ onSubmit }: LinkFormProps) {
     try {
       const link = await onSubmit({
         originalUrl: url,
-        shortCode: customCode || undefined,
       });
       setCreatedLink(link);
       setUrl('');
-      setCustomCode('');
       toast({
         title: 'Link criado!',
         description: 'Seu link encurtado está pronto.',
       });
     } catch (error) {
-      toast({
-        title: 'Erro',
-        description: error instanceof Error ? error.message : 'Falha ao criar link.',
-        variant: 'destructive',
-      });
+      // Error handled in useLinks hook
     } finally {
       setIsLoading(false);
     }
@@ -153,26 +146,6 @@ export function LinkForm({ onSubmit }: LinkFormProps) {
                 onChange={(e) => setUrl(e.target.value)}
                 className="pl-11 h-12 text-base"
                 required
-              />
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <label className="text-sm font-medium" htmlFor="customCode">
-              Código personalizado <span className="text-muted-foreground">(opcional)</span>
-            </label>
-            <div className="flex items-center gap-2">
-              <span className="text-muted-foreground text-sm whitespace-nowrap">
-                {window.location.origin}/r/
-              </span>
-              <Input
-                id="customCode"
-                type="text"
-                placeholder="meu-link"
-                value={customCode}
-                onChange={(e) => setCustomCode(e.target.value.replace(/[^a-zA-Z0-9-_]/g, ''))}
-                className="font-mono"
-                maxLength={20}
               />
             </div>
           </div>
