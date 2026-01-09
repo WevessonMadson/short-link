@@ -12,6 +12,7 @@ export interface LinkData {
 
 export interface CreateLinkPayload {
   originalUrl: string;
+  shortCode?: string;
 }
 
 // Configure axios interceptor to inject JWT token

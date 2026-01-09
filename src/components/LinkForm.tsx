@@ -12,6 +12,7 @@ interface LinkFormProps {
 
 export function LinkForm({ onSubmit }: LinkFormProps) {
   const [url, setUrl] = useState('');
+  const [customCode, setCustomCode] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [createdLink, setCreatedLink] = useState<LinkData | null>(null);
   const [copied, setCopied] = useState(false);
@@ -19,7 +20,7 @@ export function LinkForm({ onSubmit }: LinkFormProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!url) return;
 
     // Validate URL
@@ -38,6 +39,7 @@ export function LinkForm({ onSubmit }: LinkFormProps) {
     try {
       const link = await onSubmit({
         originalUrl: url,
+        shortCode: customCode || undefined,
       });
       setCreatedLink(link);
       setUrl('');
@@ -58,13 +60,14 @@ export function LinkForm({ onSubmit }: LinkFormProps) {
 
   const handleCopy = async () => {
     if (!createdLink) return;
-    
+
     await navigator.clipboard.writeText(getShortUrl(createdLink.shortCode));
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
 
   const handleCreateAnother = () => {
+    setCustomCode('');
     setCreatedLink(null);
     setCopied(false);
   };
@@ -84,7 +87,7 @@ export function LinkForm({ onSubmit }: LinkFormProps) {
                 Seu link está pronto para ser compartilhado
               </p>
             </div>
-            
+
             <div className="bg-secondary rounded-lg p-4 flex items-center gap-3">
               <Input
                 value={getShortUrl(createdLink.shortCode)}
@@ -107,9 +110,9 @@ export function LinkForm({ onSubmit }: LinkFormProps) {
 
             <div className="text-sm text-muted-foreground">
               <span className="font-medium">Destino:</span>{' '}
-              <a 
-                href={createdLink.originalUrl} 
-                target="_blank" 
+              <a
+                href={createdLink.originalUrl}
+                target="_blank"
                 rel="noopener noreferrer"
                 className="text-primary hover:underline break-all"
               >
@@ -146,6 +149,26 @@ export function LinkForm({ onSubmit }: LinkFormProps) {
                 onChange={(e) => setUrl(e.target.value)}
                 className="pl-11 h-12 text-base"
                 required
+              />
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-sm font-medium" htmlFor="customCode">
+              Código personalizado <span className="text-muted-foreground">(opcional)</span>
+            </label>
+            <div className="flex items-center gap-2">
+              {/* <span className="text-muted-foreground text-sm whitespace-nowrap">
+                {window.location.origin}/r/
+              </span> */}
+              <Input
+                id="customCode"
+                type="text"
+                placeholder="meu-link"
+                value={customCode}
+                onChange={(e) => setCustomCode(e.target.value.replace(/[^a-zA-Z0-9-_]/g, ''))}
+                className="font-mono"
+                maxLength={20}
               />
             </div>
           </div>
