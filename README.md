@@ -1,73 +1,66 @@
-# Welcome to your Lovable project
+# 🔗 short-link
 
-## Project info
+## 📌 Descrição
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+**short-link** é uma aplicação web construída com **React**, **Vite** e **TypeScript**, que permite ao usuário gerar links encurtados de forma prática e rápida.  
+A interface possui um layout moderno, responsivo e organizado, com foco em simplicidade e eficiência no uso.
 
-## How can I edit this code?
+A aplicação foi projetada para ser estática e otimizada para deploy em plataformas como **Vercel**. O encurtador de URLs pode ser utilizado diretamente pelo usuário para transformar URLs longas em versões mais curtas e fáceis de compartilhar.
 
-There are several ways of editing your application.
+🔗 Deploy em produção:  
+👉 https://t-short-link.vercel.app :contentReference[oaicite:1]{index=1}
 
-**Use Lovable**
+---
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+## 🧠 Tecnologias utilizadas
 
-Changes made via Lovable will be committed automatically to this repo.
+O projeto foi desenvolvido com as seguintes tecnologias:
 
-**Use your preferred IDE**
+- **React** — Biblioteca principal para construção da interface de usuário.
+- **Vite** — Ambiente de desenvolvimento rápido e ferramenta de build moderna.
+- **TypeScript** — Tipagem estática para maior robustez e organização do código.
+- **Tailwind CSS** — Utilitário de classes para estilização ágil e consistente.
+- **shadcn/ui** — Componentes estilizados e reutilizáveis para a interface.
+- **Vercel** — Plataforma de hospedagem e deploy contínuo.
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+---
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+## 🚀 Funcionalidades
 
-Follow these steps:
+- ✂️ Permite encurtar URLs longas para versões mais curtas.
+- Permite edição de URLs longas, para não perder a URL curta já compartilhada.
+- 📋 Interface clara para entrada e exibição dos links.
+- 📱 Layout responsivo para diferentes dispositivos.
+- ⚡ Experiência rápida no frontend com feedback visual.
+- 🌐 Deploy estático otimizado para produção.
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+---
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+## 📁 Estrutura do projeto
 
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
-
-**Edit a file directly in GitHub**
-
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
-
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+```text
+short-link/
+├── public/
+│   ├── favicon.ico
+│   └── (outros arquivos públicos)
+├── src/
+│   ├── components/        # Componentes React reutilizáveis
+│   ├── data/              # Dados estáticos ou mocks
+│   ├── hooks/             # Hooks customizados
+│   ├── lib/               # Funções utilitárias
+│   ├── pages/             # Páginas principais da aplicação
+│   ├── styles/            # Estilos globais ou específicos
+│   ├── App.tsx            # Componente raiz da aplicação
+│   └── main.tsx           # Ponto de entrada do React
+├── .gitignore
+├── README.md
+├── index.html
+├── package.json
+├── postcss.config.js
+├── tailwind.config.ts
+├── tsconfig.json
+├── tsconfig.app.json
+├── tsconfig.node.json
+├── vercel.json
+├── vite.config.ts
+└── eslint.config.js
