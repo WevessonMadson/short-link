@@ -8,7 +8,7 @@ A interface possui um layout moderno, responsivo e organizado, com foco em simpl
 A aplicação foi projetada para ser estática e otimizada para deploy em plataformas como **Vercel**. O encurtador de URLs pode ser utilizado diretamente pelo usuário para transformar URLs longas em versões mais curtas e fáceis de compartilhar.
 
 🔗 Deploy em produção:  
-👉 https://t-short-link.vercel.app :contentReference[oaicite:1]{index=1}
+👉 https://t-short-link.vercel.app
 
 ---
 
