@@ -34,8 +34,8 @@ export async function createLink(payload: CreateLinkPayload): Promise<LinkData> 
   return response.data;
 }
 
-export async function updateLink(id: string, originalUrl: string): Promise<LinkData> {
-  const response = await axios.put<LinkData>(`${API_URL}/links/${id}`, { originalUrl });
+export async function updateLink(id: string, originalUrl: string, shortCode: string): Promise<LinkData> {
+  const response = await axios.put<LinkData>(`${API_URL}/links/${id}`, { originalUrl, shortCode });
   return response.data;
 }
 

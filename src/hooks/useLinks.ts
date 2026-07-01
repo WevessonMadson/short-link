@@ -34,8 +34,8 @@ export function useLinks() {
   });
 
   const updateMutation = useMutation({
-    mutationFn: ({ id, originalUrl }: { id: string; originalUrl: string }) =>
-      apiUpdateLink(id, originalUrl),
+    mutationFn: ({ id, originalUrl, shortCode }: { id: string; originalUrl: string, shortCode: string }) =>
+      apiUpdateLink(id, originalUrl, shortCode),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['links'] });
       toast({
@@ -76,8 +76,8 @@ export function useLinks() {
     return createMutation.mutateAsync(payload);
   };
 
-  const updateLink = async (id: string, originalUrl: string) => {
-    return updateMutation.mutateAsync({ id, originalUrl });
+  const updateLink = async (id: string, originalUrl: string, shortCode: string) => {
+    return updateMutation.mutateAsync({ id, originalUrl, shortCode });
   };
 
   const deleteLink = async (id: string) => {

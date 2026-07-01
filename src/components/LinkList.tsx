@@ -10,13 +10,14 @@ import { ptBR } from 'date-fns/locale';
 interface LinkListProps {
   links: LinkData[];
   onDelete: (id: string) => void;
-  onUpdate: (id: string, newOriginalUrl: string) => void;
+  onUpdate: (id: string, newOriginalUrl: string, newShortCode: string) => void;
 }
 
 export function LinkList({ links, onDelete, onUpdate }: LinkListProps) {
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editUrl, setEditUrl] = useState('');
+  const [editShortCode, setEditShortCode] = useState('');
 
   if (links.length === 0) {
     return null;
@@ -35,18 +36,21 @@ export function LinkList({ links, onDelete, onUpdate }: LinkListProps) {
   const startEdit = (link: LinkData) => {
     setEditingId(link.id);
     setEditUrl(link.originalUrl);
+    setEditShortCode(link.shortCode);
   };
 
   const cancelEdit = () => {
     setEditingId(null);
     setEditUrl('');
+    setEditShortCode('');
   };
 
   const saveEdit = (id: string) => {
     if (editUrl.trim()) {
-      onUpdate(id, editUrl.trim());
+      onUpdate(id, editUrl.trim(), editShortCode.trim());
       setEditingId(null);
       setEditUrl('');
+      setEditShortCode('');
     }
   };
 
@@ -67,28 +71,44 @@ export function LinkList({ links, onDelete, onUpdate }: LinkListProps) {
             <div className="flex items-start justify-between gap-4">
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2 mb-1">
-                  <a
-                    href={getShortUrl(link.shortCode)}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="font-mono text-primary font-medium hover:underline truncate"
-                  >
-                    /r/{link.shortCode}
-                  </a>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity"
-                    onClick={() => handleCopy(link)}
-                  >
-                    {copiedId === link.id ? (
-                      <Check className="w-4 h-4 text-accent" />
-                    ) : (
-                      <Copy className="w-4 h-4" />
-                    )}
-                  </Button>
+                  {editingId === link.id ? (
+                    <Input
+                      value={editShortCode}
+                      onChange={(e) => setEditShortCode(e.target.value)}
+                      className="h-8 text-sm w-auto"
+                      placeholder="Novo link curto"
+                      autoFocus
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') saveEdit(link.id);
+                        if (e.key === 'Escape') cancelEdit();
+                      }}
+                    />
+                  ) : (
+                    <>
+                      <a
+                        href={getShortUrl(link.shortCode)}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="font-mono text-primary font-medium hover:underline truncate"
+                      >
+                        /r/{link.shortCode}
+                      </a>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity"
+                        onClick={() => handleCopy(link)}
+                      >
+                        {copiedId === link.id ? (
+                          <Check className="w-4 h-4 text-accent" />
+                        ) : (
+                          <Copy className="w-4 h-4" />
+                        )}
+                      </Button>
+                    </>
+                  )}
                 </div>
-                
+
                 {editingId === link.id ? (
                   <div className="flex items-center gap-2 mt-2">
                     <Input
@@ -129,7 +149,7 @@ export function LinkList({ links, onDelete, onUpdate }: LinkListProps) {
                     {link.originalUrl}
                   </a>
                 )}
-                
+
                 <div className="flex items-center gap-4 mt-2 text-xs text-muted-foreground">
                   <span>
                     {formatDistanceToNow(new Date(link.createdAt), {
@@ -175,6 +195,6 @@ export function LinkList({ links, onDelete, onUpdate }: LinkListProps) {
           </div>
         ))}
       </CardContent>
-    </Card>
+    </Card >
   );
 }
