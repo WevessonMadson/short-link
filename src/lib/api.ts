@@ -44,6 +44,6 @@ export async function deleteLink(id: string): Promise<void> {
 }
 
 export async function getLinkByShortCode(shortCode: string): Promise<LinkData> {
-  const response = await axios.get<LinkData>(`${API_URL}/links/${shortCode}`);
+  const response = await axios.get<LinkData>(`${API_URL}/links/r/${shortCode}`);
   return response.data;
 }
