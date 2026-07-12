@@ -19,11 +19,10 @@ export interface InvitationUser {
 
 export interface ReceivedInvitation {
   id: string | number;
-  sender: InvitationUser;
-  linksCount: number;
-  permission: Permission;
   status: 'PENDING' | 'ACCEPTED' | 'REJECTED' | 'CANCELED';
   createdAt: string;
+  user: InvitationUser;
+  linksCount: number;
 }
 
 export interface SentInvitation {
@@ -38,14 +37,14 @@ export interface SentInvitation {
 export interface SharedLinkForMe {
   id: string | number;
   link: LinkData;
-  owner: InvitationUser;
+  // user: InvitationUser;
   permission: Permission;
 }
 
 export interface SharedLinkByMe {
   id: string | number;
   link: LinkData;
-  recipient: InvitationUser;
+  receiver: InvitationUser;
   permission: Permission;
 }
 

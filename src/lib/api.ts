@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { InvitationUser } from './collaborationApi';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
@@ -8,6 +9,7 @@ export interface LinkData {
   shortCode: string;
   createdAt: string;
   clicks: number;
+  user: InvitationUser;
 }
 
 export interface CreateLinkPayload {

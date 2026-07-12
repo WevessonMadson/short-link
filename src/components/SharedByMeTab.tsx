@@ -78,7 +78,7 @@ export function SharedByMeTab() {
                   <User className="w-3 h-3" />
                   Destinatário:{' '}
                   <span className="font-medium text-foreground">
-                    {item.recipient.name || item.recipient.email}
+                    {item.receiver.name || item.receiver.email}
                   </span>
                 </div>
               </div>
@@ -113,7 +113,7 @@ export function SharedByMeTab() {
                     <AlertDialogHeader>
                       <AlertDialogTitle>Remover compartilhamento?</AlertDialogTitle>
                       <AlertDialogDescription>
-                        {item.recipient.name || item.recipient.email} perderá o acesso a este
+                        {item.receiver.name || item.receiver.email} perderá o acesso a este
                         link. Essa ação não pode ser desfeita.
                       </AlertDialogDescription>
                     </AlertDialogHeader>

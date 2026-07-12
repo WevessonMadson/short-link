@@ -121,9 +121,9 @@ export default function Invitations() {
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-2 flex-wrap mb-1">
                           <span className="font-medium">
-                            {inv.sender.name || inv.sender.email}
+                            {inv.user.name || inv.user.email}
                           </span>
-                          <PermissionBadge permission={inv.permission} />
+                          {/* <PermissionBadge permission={inv.permission} /> */}
                           <StatusBadge status={inv.status} />
                         </div>
                         <p className="text-sm text-muted-foreground">

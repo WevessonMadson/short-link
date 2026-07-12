@@ -59,7 +59,7 @@ export function NotificationsBell() {
                     <div className="min-w-0">
                       <p className="text-sm">
                         <span className="font-medium">
-                          {inv.sender.name || inv.sender.email}
+                          {inv.user.name || inv.user.email}
                         </span>{' '}
                         compartilhou {inv.linksCount === 1 ? '1 link' : `${inv.linksCount} links`}
                       </p>
@@ -70,7 +70,7 @@ export function NotificationsBell() {
                         })}
                       </p>
                     </div>
-                    <PermissionBadge permission={inv.permission} />
+                    {/* <PermissionBadge permission={inv.permission} /> */}
                   </div>
                   <div className="flex gap-2">
                     <Button

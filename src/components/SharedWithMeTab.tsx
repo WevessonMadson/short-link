@@ -67,7 +67,7 @@ export function SharedWithMeTab() {
                   <User className="w-3 h-3" />
                   Proprietário:{' '}
                   <span className="font-medium text-foreground">
-                    {item.owner.name || item.owner.email}
+                    {item.link.user.name || item.link.user.email}
                   </span>
                 </div>
               </div>
