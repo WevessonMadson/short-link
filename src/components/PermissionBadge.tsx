@@ -1,6 +1,6 @@
 import { Badge } from '@/components/ui/badge';
 import type { Permission } from '@/lib/collaborationApi';
-import { Eye, Pencil, Shield } from 'lucide-react';
+import { Eye, Pencil } from 'lucide-react';
 
 const config: Record<Permission, { label: string; className: string; Icon: typeof Eye }> = {
   VIEW: {
@@ -12,11 +12,6 @@ const config: Record<Permission, { label: string; className: string; Icon: typeo
     label: 'Editar',
     className: 'bg-primary/15 text-primary border-transparent',
     Icon: Pencil,
-  },
-  MANAGE: {
-    label: 'Gerenciar',
-    className: 'bg-accent/20 text-accent-foreground border-transparent',
-    Icon: Shield,
   },
 };
 
