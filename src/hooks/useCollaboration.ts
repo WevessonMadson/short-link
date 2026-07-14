@@ -9,6 +9,7 @@ import {
   rejectInvitation,
   removeSharedLink,
   shareLinks,
+  updateSharedLinkOriginalUrl,
   updateSharedLinkPermission,
   type Permission,
   type ShareRequest,
