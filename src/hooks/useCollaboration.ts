@@ -181,3 +181,24 @@ export function useRemoveSharedLink() {
     },
   });
 }
+
+export function useUpdateSharedLinkOriginalUrl() {
+  const qc = useQueryClient();
+  const { toast } = useToast();
+
+  return useMutation({
+    mutationFn: ({ sharedId, originalUrl }: { sharedId: string | number; originalUrl: string }) =>
+      updateSharedLinkOriginalUrl(sharedId, originalUrl),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: collaborationKeys.sharedForMe });
+      toast({ title: 'Link atualizado!', description: 'O destino foi alterado com sucesso.' });
+    },
+    onError: (error) => {
+      toast({
+        title: 'Erro',
+        description: errorMessage(error, 'Você não tem permissão para alterar este link.'),
+        variant: 'destructive',
+      });
+    },
+  });
+}
