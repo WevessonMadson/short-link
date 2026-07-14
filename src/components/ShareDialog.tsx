@@ -164,7 +164,6 @@ export function ShareDialog({ open, onOpenChange, linkIds, onShared }: ShareDial
               <SelectContent>
                 <SelectItem value="VIEW">Visualizar — apenas leitura</SelectItem>
                 <SelectItem value="EDIT">Editar — pode alterar o link</SelectItem>
-                <SelectItem value="MANAGE">Gerenciar — controle total</SelectItem>
               </SelectContent>
             </Select>
           </div>

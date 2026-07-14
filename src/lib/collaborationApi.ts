@@ -3,7 +3,7 @@ import type { LinkData } from './api';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
-export type Permission = 'VIEW' | 'EDIT' | 'MANAGE';
+export type Permission = 'VIEW' | 'EDIT';
 
 export interface ShareRequest {
   emails: string[];
@@ -106,4 +106,11 @@ export async function updateSharedLinkPermission(
 
 export async function removeSharedLink(id: string | number): Promise<void> {
   await axios.delete(`${API_URL}/collaboration/shared-links/${id}`);
+}
+
+export async function updateSharedLinkOriginalUrl(
+  sharedId: string | number,
+  originalUrl: string,
+): Promise<void> {
+  await axios.put(`${API_URL}/links/${sharedId}/other-user`, { originalUrl });
 }
