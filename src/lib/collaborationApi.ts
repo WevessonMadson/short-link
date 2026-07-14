@@ -27,7 +27,7 @@ export interface ReceivedInvitation {
 
 export interface SentInvitation {
   id: string | number;
-  recipient: InvitationUser;
+  user: InvitationUser;
   linksCount: number;
   permission: Permission;
   status: 'PENDING' | 'ACCEPTED' | 'REJECTED' | 'CANCELED';

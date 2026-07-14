@@ -189,9 +189,9 @@ export default function Invitations() {
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-2 flex-wrap mb-1">
                           <span className="font-medium">
-                            {inv.recipient.name || inv.recipient.email}
+                            {inv.user.name || inv.user.email}
                           </span>
-                          <PermissionBadge permission={inv.permission} />
+                          {/* <PermissionBadge permission={inv.permission} /> */}
                           <StatusBadge status={inv.status} />
                         </div>
                         <p className="text-sm text-muted-foreground">
@@ -218,7 +218,7 @@ export default function Invitations() {
                               <AlertDialogTitle>Cancelar convite?</AlertDialogTitle>
                               <AlertDialogDescription>
                                 O convite enviado para{' '}
-                                {inv.recipient.name || inv.recipient.email} será cancelado.
+                                {inv.user.name || inv.user.email} será cancelado.
                               </AlertDialogDescription>
                             </AlertDialogHeader>
                             <AlertDialogFooter>
