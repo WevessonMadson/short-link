@@ -130,13 +130,14 @@ export function SharedByMeTab() {
         open={!!activeGroup}
         onOpenChange={(o) => !o && setOpenGroup(null)}
       >
-        <DialogContent className="sm:max-w-lg">
-          <DialogHeader>
-            <DialogTitle className="font-mono">/r/{activeGroup?.link.shortCode}</DialogTitle>
-            <DialogDescription className="truncate">
+        <DialogContent className="sm:max-w-lg overflow-hidden">
+          <DialogHeader className="min-w-0 overflow-hidden">
+            <DialogTitle className="font-mono truncate">/r/{activeGroup?.link.shortCode}</DialogTitle>
+            <DialogDescription className="break-all">
               {activeGroup?.link.originalUrl}
             </DialogDescription>
           </DialogHeader>
+
 
           <div className="space-y-2 max-h-[420px] overflow-y-auto">
             {activeGroup?.shares.map((item) => {
